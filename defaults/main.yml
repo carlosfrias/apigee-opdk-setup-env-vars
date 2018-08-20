@@ -1,0 +1,4 @@
+---
+# defaults file for apigee-opdk-setup-java-home
+env_vars:
+- { var_name: "JAVA_HOME", var_value: "{{ java_home }}" }

@@ -1,0 +1,85 @@
+---
+# tasks file for apigee-opdk-setup-java-home
+- name: Assert that env_vars is provided
+  assert:
+    that:
+    - env_vars is defined
+    msg: "Please define a collection of env_vars: - { var_name: xxx' var_value: '{{ variable with value_xxx }}'"
+
+- name: Validate that provided vars exists
+  assert:
+    that:
+      - "{{ item.var_value }} is defined"
+    msg: "Please make sure that variable in collection is provided. "
+    with_items: "{{ env_vars }}"
+
+- block:
+  - name: Remove old env var if it exists
+    lineinfile:
+      create: yes
+      dest: "{{ apigee_home }}/etc/defaults.sh"
+      regexp: "^{{ item.var_name}}="
+      state: absent
+      backup: yes
+      owner: "{{ opdk_user_name }}"
+      group: "{{ opdk_group_name }}"
+    with_items: '{{ env_vars }}'
+
+  - name: Remove old export env var if it exists
+    lineinfile:
+      create: yes
+      dest: "{{ apigee_home }}/etc/defaults.sh"
+      regexp: "^export {{ item.var_name}}="
+      state: absent
+      backup: yes
+      owner: "{{ opdk_user_name }}"
+      group: "{{ opdk_group_name }}"
+    with_items: '{{ env_vars }}'
+
+  - name: Remove old PATH env var if it exists
+    lineinfile:
+      create: yes
+      dest: "{{ apigee_home }}/etc/defaults.sh"
+      regexp: "^PATH=\\${{ item.var_name}}="
+      state: absent
+      backup: yes
+      owner: "{{ opdk_user_name }}"
+      group: "{{ opdk_group_name }}"
+    with_items: '{{ env_vars }}'
+
+  - name: Update default.sh with provided env_var
+    lineinfile:
+      create: yes
+      dest: "{{ apigee_home }}/etc/defaults.sh"
+      regexp: "^{{ item.var_name }}="
+      line: '{{ item.var_name }}={{ item.var_value }}'
+      backup: yes
+      state: present
+      owner: "{{ opdk_user_name }}"
+      group: "{{ opdk_group_name }}"
+    with_items: "{{ env_vars }}"
+
+  - name: Update default.sh PATH
+    lineinfile:
+      create: yes
+      dest: "{{ apigee_home }}/etc/defaults.sh"
+      regexp: "^PATH=\\${{ item.var_name }}:\\$PATH"
+      line: 'export PATH={{ item.var_name }}={{ item.var_value }}:$PATH'
+      backup: yes
+      state: present
+      owner: "{{ opdk_user_name }}"
+      group: "{{ opdk_group_name }}"
+    with_items: "{{ env_vars }}"
+
+  - name: Update default.sh export
+    lineinfile:
+      create: yes
+      dest: "{{ apigee_home }}/etc/defaults.sh"
+      regexp: "^export=\\${{ item.var_name }}"
+      line: 'export {{ item.var_name }}'
+      backup: yes
+      state: present
+      owner: "{{ opdk_user_name }}"
+      group: "{{ opdk_group_name }}"
+    with_items: "{{ env_vars }}"
+  become: yes
