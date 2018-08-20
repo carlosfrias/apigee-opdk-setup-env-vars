@@ -64,7 +64,7 @@
       create: yes
       dest: "{{ apigee_home }}/etc/defaults.sh"
       regexp: "^PATH=\\${{ item.var_name }}:\\$PATH"
-      line: 'export PATH={{ item.var_name }}={{ item.var_value }}:$PATH'
+      line: 'export PATH=\\${{ item.var_name }}={{ item.var_value }}:$PATH'
       backup: yes
       state: present
       owner: "{{ opdk_user_name }}"
