@@ -6,12 +6,12 @@
     - env_vars is defined
     msg: "Please define a collection of env_vars with structure { var_name: 'xxx', var_value: '<variable with value_xxx>'"
 
-- name: Validate that provided vars exists
-  assert:
-    that:
-      - "{{ item.var_value }} is defined"
-    msg: "Please make sure that variable in collection is provided. "
-    with_items: "{{ env_vars }}"
+#- name: Validate that provided vars exists
+#  assert:
+#    that:
+#      - "{{ item.var_value }} is defined"
+#    msg: "Please make sure that variable in collection is provided."
+#    with_items: "{{ env_vars }}"
 
 - block:
   - name: Remove old env var if it exists
